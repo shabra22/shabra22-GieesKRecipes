@@ -397,7 +397,7 @@ function renderRecipeModal(recipe) {
     "publisher": {
       "@type": "Organization",
       "name": "GieesK Recipes",
-      "url": "https://gieeskrecipes.pages.dev"
+      "url": "https://gieesk.com"
     }
   };
   // Clean undefined values

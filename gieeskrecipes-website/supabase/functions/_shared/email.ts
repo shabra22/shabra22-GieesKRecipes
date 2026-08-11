@@ -92,7 +92,7 @@ export async function sendEmailBatch(emails: EmailPayload[]): Promise<{ ok: bool
 
 // Shared visual wrapper so every notification email looks like it
 // came from the same product, without duplicating markup everywhere.
-export function emailShell(bodyHtml: string, siteUrl = 'https://gieeskrecipes.pages.dev'): string {
+export function emailShell(bodyHtml: string, siteUrl = 'https://gieesk.com'): string {
   return `
   <div style="background:#0A0A09;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
     <div style="max-width:480px;margin:0 auto;background:#141412;border:1px solid #2A2A26;border-radius:12px;overflow:hidden;">

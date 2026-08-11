@@ -60,7 +60,7 @@ const output = {
   version:       '1.0',
   generated:     new Date().toISOString(),
   platform:      'GieesK Recipes',
-  website:       'https://gieeskrecipes.pages.dev',
+  website:       'https://gieesk.com',
   description:   'GieesK Recipes global recipe database — auto-generated JSON',
   total_recipes: RECIPES.length,
   cuisines: (CUISINES || []).map(function(c) {

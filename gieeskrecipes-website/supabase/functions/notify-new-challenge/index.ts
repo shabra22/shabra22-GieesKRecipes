@@ -26,7 +26,7 @@ import { sendEmailBatch, emailShell, type EmailPayload } from '../_shared/email.
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const SITE_URL = Deno.env.get('SITE_URL') || 'https://gieeskrecipes.pages.dev';
+const SITE_URL = Deno.env.get('SITE_URL') || 'https://gieesk.com';
 
 const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 

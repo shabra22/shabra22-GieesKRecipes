@@ -20,11 +20,11 @@ If you want it later:
 7. Fill in Services ID, Team ID, Key ID, and paste .p8 file contents
 
 ## ✅ Deployed
-Live on Cloudflare Pages: https://gieeskrecipes.pages.dev
+Live on Cloudflare Pages: https://gieesk.com
 
 Supabase Auth → URL Configuration should point here:
-- Site URL: https://gieeskrecipes.pages.dev
-- Redirect URLs: https://gieeskrecipes.pages.dev/*
+- Site URL: https://gieesk.com
+- Redirect URLs: https://gieesk.com/*
 
 (If a custom domain is connected later, update both to match and add
 the new domain to Google Cloud OAuth below.)
@@ -32,5 +32,5 @@ the new domain to Google Cloud OAuth below.)
 ## Google Cloud OAuth — add your live domain
 Go to Google Cloud Console → Credentials → your GieesK Recipes OAuth client
 and add:
-- Authorised JavaScript origins: https://gieeskrecipes.pages.dev
+- Authorised JavaScript origins: https://gieesk.com
 - Authorised redirect URIs: https://qwlrcjwqjlzrkdhmwqgz.supabase.co/auth/v1/callback

@@ -7,4 +7,4 @@ Disallow: /js/data.js
 Disallow: /*.json$
 
 # Sitemap
-Sitemap: https://gieeskrecipes.pages.dev/sitemap.xml
+Sitemap: https://gieesk.com/sitemap.xml

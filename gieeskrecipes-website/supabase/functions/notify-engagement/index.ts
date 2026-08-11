@@ -28,7 +28,7 @@ import { sendEmail, emailShell } from '../_shared/email.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const SITE_URL = Deno.env.get('SITE_URL') || 'https://gieeskrecipes.pages.dev';
+const SITE_URL = Deno.env.get('SITE_URL') || 'https://gieesk.com';
 
 // Service-role client — this is a trusted server context (an Edge
 // Function, never exposed to the browser), so it's safe to use the

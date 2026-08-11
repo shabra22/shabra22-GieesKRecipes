@@ -43,7 +43,7 @@ Find `YOUR_PROJECT_REF` in your Supabase dashboard URL:
 ```bash
 supabase secrets set RESEND_API_KEY=re_xxxxxxxxxxxx
 supabase secrets set FROM_EMAIL="GieesK Recipes <onboarding@resend.dev>"
-supabase secrets set SITE_URL=https://gieeskrecipes.pages.dev
+supabase secrets set SITE_URL=https://gieesk.com
 ```
 
 Once you've verified your own domain in Resend, update `FROM_EMAIL` to

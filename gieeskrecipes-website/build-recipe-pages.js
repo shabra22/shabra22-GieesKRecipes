@@ -25,7 +25,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const SITE = 'https://gieeskrecipes.pages.dev';
+const SITE = 'https://gieesk.com';
 const OUT_DIR = path.join(__dirname, 'recipes');
 const OG_IMAGE = SITE + '/assets/video/hero-poster.jpg'; // shared — recipes have no individual photos yet
 

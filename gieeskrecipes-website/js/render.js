@@ -133,10 +133,42 @@ function renderCuisines() {
         '<div class="cuisine-count">' + formatNum(c.count) + ' recipe' + (c.count === 1 ? '' : 's') + '</div>' +
       '</div>';
     card.addEventListener('click', function() {
-      var inp = document.getElementById('searchInput');
-      if (inp) { inp.value = c.name; performSearch(c.name); }
-      var strip = document.getElementById('search-strip');
-      if (strip) strip.scrollIntoView({ behavior:'smooth' });
+      // Previously routed through the general free-text search box —
+      // which does a broad substring match against title/desc/tags,
+      // so searching "Italian" could surface completely unrelated
+      // dishes (a Kenyan or Ethiopian fusion recipe whose description
+      // happens to mention "Italian-inspired") and capped results at
+      // 6 with no way to see the rest. The Recipes-by-Country page
+      // already filters precisely by real country and shows every
+      // matching recipe on a real scrollable page — navigate there
+      // and select the matching country tab instead.
+      var cuisineToCountry = {
+        Italian: 'Italy', Japanese: 'Japan', Mexican: 'Mexico', Indian: 'India',
+        Thai: 'Thailand', Moroccan: 'Morocco', French: 'France', Lebanese: 'Lebanon',
+        Chinese: 'China', Greek: 'Greece', Ethiopian: 'Ethiopia', Peruvian: 'Peru',
+        Kenyan: 'Kenya', Tanzanian: 'Tanzania', Israeli: 'Israel', British: 'UK',
+      };
+      var countryName = cuisineToCountry[c.name] || c.name;
+      showPage('recipes');
+      setTimeout(function() {
+        var pills = document.querySelectorAll('#countryTabs .filter-chip');
+        var matched = false;
+        pills.forEach(function(p) {
+          if (p.textContent.indexOf(countryName) !== -1 && p.textContent.indexOf('All Countries') === -1) {
+            p.click();
+            matched = true;
+          }
+        });
+        if (!matched) {
+          // No recipes exist yet for this cuisine (e.g. French, Chinese) —
+          // there's no country pill to click. Be honest about that rather
+          // than silently doing nothing.
+          var grid = document.getElementById('recipesContainer');
+          if (grid) {
+            grid.innerHTML = '<div class="saved-empty" style="grid-column:1/-1;padding:3rem"><i class="ti ti-mood-empty" style="font-size:2rem"></i><h3>No ' + c.name + ' recipes yet</h3><p>Check back soon, we are always adding more.</p></div>';
+          }
+        }
+      }, 100);
     });
     grid.appendChild(card);
   });
