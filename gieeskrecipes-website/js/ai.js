@@ -1,6 +1,11 @@
 /* ═══════════════════════════════════════════
    GIEESKRECIPES — AI Chef Chat
+   Calls the ai-chef-chat Supabase Edge Function,
+   which proxies to the Claude API.
 ═══════════════════════════════════════════ */
+
+const AI_CHEF_MAX_HISTORY = 10; // messages of context kept and sent
+let aiChefHistory = []; // [{ role: 'user' | 'assistant', content: string }]
 
 function appendMessage(text, role) {
   role = role || 'bot';
@@ -34,96 +39,60 @@ function removeTyping() {
   if (el) el.remove();
 }
 
-function getAIResponse(prompt) {
-  var p = prompt.toLowerCase();
-  var suggestions = AI_RESPONSES.default_suggestions;
-  var intro = "Here are some ideas I think you'll love:";
-
-  if (p.includes('chicken') || p.includes('lemon') || p.includes('rice')) {
-    suggestions = AI_RESPONSES.chicken;
-    intro = 'With chicken, lemon, and rice you can make some beautiful dishes:';
-  } else if (p.includes('keto') || p.includes('low carb')) {
-    suggestions = AI_RESPONSES.keto;
-    intro = 'Here are some delicious keto recipes under 500 calories:';
-  } else if (p.includes('vegan') || p.includes('plant')) {
-    suggestions = AI_RESPONSES.vegan;
-    intro = 'Great plant-based choices coming right up:';
-  } else if (p.includes('budget') || p.includes('cheap') || p.includes('family')) {
-    suggestions = AI_RESPONSES.budget;
-    intro = 'Delicious and budget-friendly recipes for you:';
-  } else if (p.includes('kenya') || p.includes('ugali') || p.includes('sukuma')) {
-    suggestions = AI_RESPONSES.kenya;
-    intro = 'Here are some authentic Kenyan recipes to explore:';
-  } else if (p.includes('breakfast')) {
-    intro = 'Some wonderful breakfast options:';
-    suggestions = [
-      'Avocado & Poached Egg Toast \uD83E\uDD51 — ready in 10 minutes.',
-      'Shakshuka \uD83C\uDF73 — spiced eggs, satisfying and warming.',
-      'Overnight Oats with Mango \uD83E\uDD6D — prep the night before.'
-    ];
-  } else if (p.includes('dessert') || p.includes('sweet') || p.includes('cake')) {
-    intro = 'Indulge yourself with these desserts:';
-    suggestions = [
-      'Tiramisu \u2615 — classic Italian, no baking needed.',
-      'Mango Sticky Rice \uD83E\uDD6D — Thai street food classic.',
-      'Dark Chocolate Lava Cake 🍫 — 20 minutes, showstopper.'
-    ];
-  }
-  return { intro: intro, suggestions: suggestions };
+function setAIChefSending(sending) {
+  var input = document.getElementById('aiInput');
+  var sendBtn = document.getElementById('aiSend');
+  if (input) input.disabled = sending;
+  if (sendBtn) sendBtn.disabled = sending;
 }
 
-function appendRecipeSuggestions(suggestions) {
-  var messages = document.getElementById('aiMessages');
-  if (!messages) return;
-  suggestions.forEach(function(s) {
-    var parts = s.split(' — ');
-    var el = document.createElement('div');
-    el.className = 'ai-msg bot';
-    var bubble = document.createElement('div');
-    bubble.className = 'msg-bubble';
-    var card = document.createElement('div');
-    card.className = 'ai-recipe-result';
-    var title = document.createElement('div');
-    title.className = 'ai-recipe-result-title';
-    title.textContent = parts[0];
-    card.appendChild(title);
-    if (parts[1]) {
-      var desc = document.createElement('div');
-      desc.className = 'ai-recipe-result-desc';
-      desc.textContent = parts[1];
-      card.appendChild(desc);
-    }
-    bubble.appendChild(card);
-    el.appendChild(bubble);
-    messages.appendChild(el);
+// Calls the ai-chef-chat Edge Function (proxies to Claude API server-side,
+// same sb.functions.invoke pattern as triggerEngagementNotification in
+// community.js — keeps the Anthropic key off the client entirely).
+async function fetchAIChefReply(message) {
+  var sb = getSupabase();
+  if (!sb) throw new Error('Supabase client not ready');
+
+  var trimmedHistory = aiChefHistory.slice(-AI_CHEF_MAX_HISTORY);
+
+  var res = await sb.functions.invoke('ai-chef-chat', {
+    body: { message: message, history: trimmedHistory },
   });
-  messages.scrollTop = messages.scrollHeight;
+  var data = res.data, error = res.error;
+
+  if (error) throw error;
+  if (data && data.error) throw new Error(data.error);
+  return data.reply;
 }
 
 function sendAIMessage(prompt) {
   prompt = (prompt || '').trim();
   if (!prompt) return;
 
-  // Clear input first
   var input = document.getElementById('aiInput');
   if (input) input.value = '';
 
-  // Show user message
   appendMessage(prompt, 'user');
+  aiChefHistory.push({ role: 'user', content: prompt });
 
-  // Show typing
+  setAIChefSending(true);
   showTyping();
 
-  // Respond after delay
-  var delay = 800 + Math.random() * 500;
-  setTimeout(function() {
-    removeTyping();
-    var response = getAIResponse(prompt);
-    appendMessage(response.intro, 'bot');
-    setTimeout(function() {
-      appendRecipeSuggestions(response.suggestions);
-    }, 300);
-  }, delay);
+  fetchAIChefReply(prompt)
+    .then(function (reply) {
+      removeTyping();
+      appendMessage(reply, 'bot');
+      aiChefHistory.push({ role: 'assistant', content: reply });
+    })
+    .catch(function (err) {
+      console.error('[GieesK] AI Chef error:', err);
+      removeTyping();
+      appendMessage("Sorry, the chef is having trouble responding right now. Please try again in a moment.", 'bot');
+    })
+    .finally(function () {
+      setAIChefSending(false);
+      if (input) input.focus();
+    });
 }
 
 function initAI() {
