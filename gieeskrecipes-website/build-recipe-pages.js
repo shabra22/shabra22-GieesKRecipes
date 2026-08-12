@@ -343,6 +343,8 @@ console.log(`✅ Generated ${written} static recipe pages in /recipes/`);
 const today = new Date().toISOString().slice(0, 10);
 const urls = [
   { loc: SITE + '/', freq: 'daily', pri: '1.0' },
+  { loc: SITE + '/privacy.html', freq: 'yearly', pri: '0.3' },
+  { loc: SITE + '/terms.html', freq: 'yearly', pri: '0.3' },
   ...RECIPES.map(r => ({ loc: SITE + '/recipes/' + r.id + '.html', freq: 'monthly', pri: '0.7' }))
 ];
 const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
