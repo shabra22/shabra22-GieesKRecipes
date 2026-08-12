@@ -251,6 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDataViews();   // fallback if the loader is absent
   }
 
+  // Deep-link support for #privacy and #terms so these have real,
+  // directly-loadable URLs (needed for Google OAuth branding verification
+  // and for sharing/bookmarking links to the legal pages).
+  if (window.location.hash === '#privacy' || window.location.hash === '#terms') {
+    showLegal(window.location.hash.slice(1));
+  }
+
   // Hero buttons
   var heroExplore = document.getElementById('heroExplore');
   if (heroExplore) heroExplore.addEventListener('click', function() { showPage('recipes'); });

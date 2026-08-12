@@ -47,7 +47,7 @@ supabase secrets set SITE_URL=https://gieesk.com
 ```
 
 Once you've verified your own domain in Resend, update `FROM_EMAIL` to
-something like `"GieesK Recipes <notifications@gieeskrecipes.com>"` and
+something like `"GieesK Recipes <notifications@gieesk.com>"` and
 re-run that command — it overwrites the old value.
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically
