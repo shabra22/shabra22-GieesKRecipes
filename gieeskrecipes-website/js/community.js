@@ -339,6 +339,17 @@ function openRecipeModalById(id) {
   if (r) openRecipeModal(r);
 }
 
+// Calls the notify-engagement Edge Function directly, bypassing Database
+// Webhooks entirely (Supabase's `supabase_functions` schema is broken on
+// this project — SQLSTATE 3F000 — so the DB-trigger path can't be used).
+// This is intentionally fire-and-forget: a failed notification should
+// never block or break the actual like/comment action for the user.
+function triggerEngagementNotification(sb, table, record) {
+  sb.functions.invoke('notify-engagement', {
+    body: { type: 'INSERT', table, record, schema: 'public' },
+  }).catch(e => console.warn('[GieesK] engagement notification failed (non-critical):', e));
+}
+
 async function toggleLike(postId) {
   if (!currentUser) { openAuthModal('login'); return; }
   const sb = getSupabase();
@@ -367,6 +378,9 @@ async function toggleLike(postId) {
       btn.querySelector('i').className = `ti ti-heart${isLiked ? '-filled' : ''}`;
       count.textContent = Math.max(0, parseInt(count.textContent, 10) + (isLiked ? 1 : -1));
     }
+  } else if (!isLiked) {
+    // Only notify on a genuine new like, never on unlike
+    triggerEngagementNotification(sb, 'post_likes', { post_id: postId, user_id: currentUser.id });
   }
 }
 
@@ -406,6 +420,7 @@ async function submitComment(postId) {
   const name = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'You';
   const { error } = await sb.from('post_comments').insert({ post_id: postId, user_id: currentUser.id, author_name: name, text });
   if (error) { console.error('[GieesK] comment failed:', error); return; }
+  triggerEngagementNotification(sb, 'post_comments', { post_id: postId, user_id: currentUser.id, text });
 
   input.value = '';
   await loadComments(postId);
