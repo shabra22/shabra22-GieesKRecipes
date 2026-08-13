@@ -291,8 +291,12 @@ function renderRecipeModal(recipe) {
   if (n.sodium  !== undefined) nutCols += '<div class="nutrition-item"><div class="nutrition-val">' + n.sodium + 'mg</div><div class="nutrition-label">Sodium</div></div>';
   var nutCount = Object.values(n).filter(function(v) { return v !== undefined; }).length;
 
+  var heroHTML = recipe.image
+    ? '<div class="modal-recipe-hero-photo"><img src="' + recipe.image + '" alt="' + recipe.title + '" loading="lazy" /></div>'
+    : '<div class="modal-recipe-hero-placeholder">' + recipe.emoji + '</div>';
+
   content.innerHTML =
-    '<div class="modal-recipe-hero-placeholder">' + recipe.emoji + '</div>' +
+    heroHTML +
     '<div class="modal-body">' +
       variantHTML +
       collectionsHTML +
