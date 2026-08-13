@@ -19,11 +19,25 @@ const INDEX_FIELDS = [
   'id','title','localName','emoji','country','countryFlag','cuisine',
   'category','course','diff','time','prepTime','cookTime','servings',
   'cal','rating','reviews','tags','collections','desc',
-  'author','authorEmoji'
+  'author','authorEmoji','image'
 ];
 
 console.log('Reading js/data.js…');
 const src = fs.readFileSync(path.join(__dirname,'js','data.js'),'utf8');
+
+// ── Photo URLs live in a separate file, NOT in data.js ───────────
+// data.js is hand-maintained; photos are fetched by a script (Pexels
+// API) and would be wiped out every time this build regenerates
+// data/ from data.js. Keeping them in data/images-map.json means
+// they survive every rebuild — this file merges them back in below.
+const IMAGES_MAP_PATH = path.join(__dirname, 'data', 'images-map.json');
+let imagesMap = {};
+if (fs.existsSync(IMAGES_MAP_PATH)) {
+  imagesMap = JSON.parse(fs.readFileSync(IMAGES_MAP_PATH, 'utf8'));
+  console.log(`Loaded ${Object.keys(imagesMap).length} photo URLs from images-map.json.`);
+} else {
+  console.log('No images-map.json found — recipes will have no photos yet.');
+}
 
 // Evaluate data.js in a sandbox to get the RECIPES array
 const sandbox = { window:{}, document:{} };
@@ -107,6 +121,14 @@ const index = [];
 let fullBytes = 0;
 
 RECIPES.forEach(r => {
+  // Merge in the photo URL (if we have one for this recipe) BEFORE
+  // splitting into index/detail — this way it survives every rebuild.
+  const photo = imagesMap[r.id];
+  if (photo) {
+    r.image = photo.image;
+    if (photo.imageCredit) r.imageCredit = photo.imageCredit;
+  }
+
   const light = {};
   INDEX_FIELDS.forEach(k => { if (r[k] !== undefined) light[k] = r[k]; });
   if (light.desc) light.desc = shortDesc(light.desc);

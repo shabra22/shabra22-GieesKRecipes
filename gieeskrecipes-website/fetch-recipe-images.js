@@ -23,7 +23,7 @@ const path = require('path');
 
 const API_KEY = process.env.PEXELS_API_KEY;
 const RECIPES_DIR = path.join(__dirname, 'data', 'recipes');
-const INDEX_PATH = path.join(__dirname, 'data', 'index.json');
+const IMAGES_MAP_PATH = path.join(__dirname, 'data', 'images-map.json');
 const DELAY_MS = 300; // ~3 requests/sec — well under Pexels' rate limit
 
 if (!API_KEY) {
@@ -65,8 +65,10 @@ async function main() {
   const files = fs.readdirSync(RECIPES_DIR).filter((f) => f.endsWith('.json'));
   console.log(`Found ${files.length} recipe files.\n`);
 
-  const index = JSON.parse(fs.readFileSync(INDEX_PATH, 'utf8'));
-  const indexById = new Map(index.map((r) => [String(r.id), r]));
+  let imagesMap = {};
+  if (fs.existsSync(IMAGES_MAP_PATH)) {
+    imagesMap = JSON.parse(fs.readFileSync(IMAGES_MAP_PATH, 'utf8'));
+  }
 
   let updated = 0;
   let skipped = 0;
@@ -77,9 +79,9 @@ async function main() {
     const filePath = path.join(RECIPES_DIR, file);
     const recipe = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-    if (recipe.image) {
+    if (imagesMap[recipe.id]) {
       skipped++;
-      continue; // already has a photo — safe to re-run the script
+      continue; // already fetched — safe to re-run the script
     }
 
     // Search using the dish name plus "food" to bias toward food photography
@@ -90,13 +92,11 @@ async function main() {
       const result = await searchPexels(query);
 
       if (result) {
-        recipe.image = result.url;
-        recipe.imageCredit = `Photo by ${result.photographer} on Pexels`;
-        fs.writeFileSync(filePath, JSON.stringify(recipe), 'utf8');
-
-        // Mirror into index.json too, if this recipe is listed there
-        const indexEntry = indexById.get(String(recipe.id));
-        if (indexEntry) indexEntry.image = result.url;
+        imagesMap[recipe.id] = {
+          image: result.url,
+          imageCredit: `Photo by ${result.photographer} on Pexels`,
+        };
+        fs.writeFileSync(IMAGES_MAP_PATH, JSON.stringify(imagesMap), 'utf8');
 
         updated++;
         console.log('✅');
@@ -112,13 +112,12 @@ async function main() {
     await sleep(DELAY_MS);
   }
 
-  fs.writeFileSync(INDEX_PATH, JSON.stringify(index), 'utf8');
-
   console.log('\n─────────────────────────────');
   console.log(`Updated: ${updated}`);
   console.log(`Already had a photo (skipped): ${skipped}`);
   console.log(`Failed / no match: ${failed}`);
   console.log('─────────────────────────────');
+  console.log('\nNow run: node build-data.js   (to apply photos to the site)');
 }
 
 main().catch((err) => {
