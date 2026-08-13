@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rsd.innerHTML = results.length
           ? results.slice(0,8).map(r => `
             <div class="search-drop-item" onclick="openRecipeModal(RECIPES.find(x=>String(x.id)==='${r.id}'));document.getElementById('recipesSearchDrop').classList.remove('visible')">
-              <div class="search-drop-thumb">${r.emoji}</div>
+              <div class="search-drop-thumb">${r.image ? `<img src="${r.image}" alt="${r.title}" loading="lazy" />` : r.emoji}</div>
               <div>
                 <div class="search-drop-title">${r.title}</div>
                 <div class="search-drop-meta">${r.countryFlag||''} ${r.country||r.cuisine} · ${r.time}min · ${r.cal} cal</div>
