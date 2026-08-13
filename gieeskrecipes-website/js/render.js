@@ -37,12 +37,16 @@ function createRecipeCard(recipe, delay) {
   var escTitle = String(recipe.title)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
+  var mediaHTML = recipe.image
+    ? '<img src="' + recipe.image + '" alt="' + escTitle + '" loading="lazy" />'
+    : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--bg-elevated)">' +
+        recipe.emoji +
+      '</div>';
+
   card.innerHTML =
     '<a class="recipe-card-link" href="/recipes/' + recipe.id + '.html" aria-label="' + escTitle + '">' +
       '<div class="recipe-card-img">' +
-        '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--bg-elevated)">' +
-          recipe.emoji +
-        '</div>' +
+        mediaHTML +
         '<div class="recipe-card-badges">' + tagsHTML + '</div>' +
       '</div>' +
       '<div class="recipe-card-body">' +
