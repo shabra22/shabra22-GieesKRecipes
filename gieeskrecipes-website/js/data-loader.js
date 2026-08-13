@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  var INDEX_URL  = 'data/index.json';
+  var INDEX_URL  = 'data/index.json?v=2';
   var DETAIL_URL = 'data/recipes/';
 
   // In-memory cache — the browser HTTP cache handles persistence,
