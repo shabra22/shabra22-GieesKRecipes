@@ -1,6 +1,6 @@
-# Recipe detail — immutable content, cache hard at the edge and in-browser
+# Recipe detail — content can change (photos, edits); cache but revalidate
 /data/recipes/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 # Catalogue — changes when recipes are added; revalidate daily
 /data/index.json
