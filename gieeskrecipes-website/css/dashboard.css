@@ -477,6 +477,13 @@
   width: 100%;
 }
 .planner-slot-emoji { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+.planner-slot-thumb {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 3px;
+}
 .planner-slot-remove {
   position: absolute;
   top: 3px; right: 3px;
@@ -560,6 +567,12 @@
 }
 .planner-picker-item:hover { background: var(--bg-elevated); }
 .planner-picker-emoji { font-size: 1.5rem; flex-shrink: 0; }
+.planner-picker-thumb {
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
 .planner-picker-info-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
 .planner-picker-info-meta  { font-size: 11px; color: var(--text-muted); }
 
