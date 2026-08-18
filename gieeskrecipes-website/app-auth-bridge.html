@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Signing you in — GieesK Recipes</title>
+<style>
+  body {
+    margin: 0;
+    background: #0A0A09;
+    color: #F0EEE8;
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    padding: 24px;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(212,160,57,0.25);
+    border-top-color: #D4A039;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 18px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  p { color: #B8B6AE; font-size: 14px; margin: 4px 0; }
+  a {
+    color: #D4A039;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 18px;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <p>Signing you in…</p>
+  <p id="fallbackMsg" style="display:none">
+    Didn't open automatically?<br />
+    <a id="fallbackLink" href="#">Open GieesK Recipes</a>
+  </p>
+
+  <script>
+    // Supabase redirects here after Google/Apple OAuth completes — this page's
+    // only job is to hand the same tokens/code off to the app's custom URL
+    // scheme, which Android's intent-filter catches and routes into the app.
+    // This exists because Supabase's server can't reliably redirect directly
+    // to a non-https custom scheme (com.gieesk.recipes://) — but it handles
+    // a normal https:// redirect (this page) just fine.
+    var appUrl = 'com.gieesk.recipes://auth-callback' + window.location.search + window.location.hash;
+
+    document.getElementById('fallbackLink').href = appUrl;
+
+    window.location.href = appUrl;
+
+    // If the app doesn't open within a couple seconds (not installed, or
+    // opened in a plain browser instead of the in-app tab), show a manual link.
+    setTimeout(function () {
+      document.getElementById('fallbackMsg').style.display = 'block';
+    }, 2000);
+  </script>
+</body>
+</html>
